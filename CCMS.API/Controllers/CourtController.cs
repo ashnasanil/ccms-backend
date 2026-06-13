@@ -22,6 +22,23 @@ namespace CCMS.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("cases")]
+        public async Task<IActionResult> GetCasesAsync()
+        {
+            var result = await _courtService.GetCasesAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("cases/{id}")]
+        public async Task<IActionResult> GetCaseByIdAsync(int id)
+        {
+            var result = await _courtService.GetCaseByIdAsync(id);
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
+
         [HttpPost("cases")]
         public async Task<IActionResult> CreateCaseAsync([FromForm] CCMS.Application.DTOs.Court.CreateCaseDto dto)
         {

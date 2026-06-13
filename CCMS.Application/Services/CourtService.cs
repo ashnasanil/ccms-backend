@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +17,43 @@ namespace CCMS.Application.Services
         {
             // TODO: Fetch dashboard statistics from the database
             return Task.FromResult(new CourtDashboardDto());
+        }
+
+        public Task<IEnumerable<CaseListDto>> GetCasesAsync()
+        {
+            // TODO: Fetch from database. Stubbed for now.
+            var list = new List<CaseListDto>
+            {
+                new CaseListDto
+                {
+                    CaseNumber = "CCMS-20260610-0001",
+                    DefendantName = "John Doe",
+                    OrderType = "Freeze Account",
+                    Status = "Pending",
+                    CreatedDate = new DateTime(2026, 6, 10, 10, 0, 0)
+                }
+            };
+            return Task.FromResult<IEnumerable<CaseListDto>>(list);
+        }
+
+        public Task<CaseDetailDto> GetCaseByIdAsync(int id)
+        {
+            // TODO: Fetch from database. Stubbed for now, applying masking rules.
+            var detail = new CaseDetailDto
+            {
+                CaseNumber = "CCMS-20260610-0001",
+                ComplainantName = "Alice",
+                DefendantName = "John Doe",
+                AadhaarNumber = MaskingHelper.MaskAadhaar("123412341234"),
+                PanNumber = MaskingHelper.MaskPan("ABCDE1234F"),
+                AccountNumber = MaskingHelper.MaskAccountNumber("1234567890123456"),
+                BankName = "SBI",
+                OrderType = "Freeze Account",
+                FreezeAmount = 10000,
+                Status = "Pending",
+                CreatedDate = new DateTime(2026, 6, 10, 10, 0, 0)
+            };
+            return Task.FromResult(detail);
         }
 
         public Task<CaseResponseDto> CreateCaseAsync(CreateCaseDto dto)
