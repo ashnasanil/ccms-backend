@@ -10,5 +10,8 @@ namespace CCMS.Application.Interfaces
         Task<CaseResponseDto> CreateCaseAsync(CreateCaseDto dto);
         Task<IEnumerable<CaseListDto>> GetCasesAsync();
         Task<CaseDetailDto> GetCaseByIdAsync(int id);
+        
+        void ValidateAttachments(Microsoft.AspNetCore.Http.IFormFile courtOrder, Microsoft.AspNetCore.Http.IFormFile aadhaar, Microsoft.AspNetCore.Http.IFormFile pan);
+        Task<List<AttachmentDto>> ProcessAttachments(Microsoft.AspNetCore.Http.IFormFile courtOrder, Microsoft.AspNetCore.Http.IFormFile aadhaar, Microsoft.AspNetCore.Http.IFormFile pan);
     }
 }

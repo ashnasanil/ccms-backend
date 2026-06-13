@@ -56,36 +56,58 @@ namespace CCMS.Application.Services
             return Task.FromResult(detail);
         }
 
-        public Task<CaseResponseDto> CreateCaseAsync(CreateCaseDto dto)
+        public void ValidateAttachments(Microsoft.AspNetCore.Http.IFormFile courtOrder, Microsoft.AspNetCore.Http.IFormFile aadhaar, Microsoft.AspNetCore.Http.IFormFile pan)
         {
-            // Validate Documents
-            if (dto.Documents == null || dto.Documents.Count != 3)
+            if (courtOrder == null || aadhaar == null || pan == null)
             {
-                throw new ArgumentException("Exactly 3 documents are required (Court Order, Aadhaar Copy, PAN Copy).");
+                throw new ArgumentException("All three supporting documents are mandatory.");
             }
 
             var allowedExtensions = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
             var maxFileSize = 5 * 1024 * 1024; // 5 MB
+            var files = new[] { courtOrder, aadhaar, pan };
 
-            foreach (var doc in dto.Documents)
+            foreach (var doc in files)
             {
                 if (doc.Length > maxFileSize)
                 {
-                    throw new ArgumentException($"File {doc.FileName} exceeds the maximum size of 5MB.");
+                    throw new ArgumentException("File size exceeds maximum allowed limit.");
                 }
 
                 var extension = Path.GetExtension(doc.FileName).ToLowerInvariant();
                 if (!allowedExtensions.Contains(extension))
                 {
-                    throw new ArgumentException($"File {doc.FileName} has an invalid format. Supported formats: PDF, JPG, JPEG, PNG. Rejected formats like EXE, BAT, JS, ZIP are not allowed.");
+                    throw new ArgumentException("Unsupported file format.");
                 }
             }
+        }
+
+        public Task<List<AttachmentDto>> ProcessAttachments(Microsoft.AspNetCore.Http.IFormFile courtOrder, Microsoft.AspNetCore.Http.IFormFile aadhaar, Microsoft.AspNetCore.Http.IFormFile pan)
+        {
+            // Stubbed implementation for file saving (since we don't save to DB or disk yet)
+            var dtos = new List<AttachmentDto>
+            {
+                new AttachmentDto { FileName = courtOrder.FileName, FilePath = "/uploads/" + courtOrder.FileName, UploadedDate = DateTime.UtcNow },
+                new AttachmentDto { FileName = aadhaar.FileName, FilePath = "/uploads/" + aadhaar.FileName, UploadedDate = DateTime.UtcNow },
+                new AttachmentDto { FileName = pan.FileName, FilePath = "/uploads/" + pan.FileName, UploadedDate = DateTime.UtcNow }
+            };
+            
+            return Task.FromResult(dtos);
+        }
+
+        public async Task<CaseResponseDto> CreateCaseAsync(CreateCaseDto dto)
+        {
+            // Validate Documents
+            ValidateAttachments(dto.CourtOrderFile, dto.AadhaarCopyFile, dto.PanCopyFile);
 
             // Validate Freeze Amount if FreezeAccount
             if (dto.OrderType == OrderType.FreezeAccount && (!dto.FreezeAmount.HasValue || dto.FreezeAmount.Value <= 0))
             {
                 throw new ArgumentException("Freeze Amount is required for Freeze Account orders.");
             }
+
+            // Process Attachments
+            var attachments = await ProcessAttachments(dto.CourtOrderFile, dto.AadhaarCopyFile, dto.PanCopyFile);
 
             // Generate Case Number
             var caseNumber = CaseNumberGenerator.Generate();
@@ -108,12 +130,12 @@ namespace CCMS.Application.Services
             };
 
             // Return Response
-            return Task.FromResult(new CaseResponseDto
+            return new CaseResponseDto
             {
                 CaseNumber = newCase.CaseNumber,
                 Status = newCase.Status,
                 CreatedDate = newCase.CreatedDate
-            });
+            };
         }
     }
 }

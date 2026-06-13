@@ -31,6 +31,12 @@ namespace CCMS.Application.DTOs.Court
         public decimal? FreezeAmount { get; set; }
         
         [Required]
-        public List<IFormFile> Documents { get; set; }
+        public IFormFile CourtOrderFile { get; set; }
+        
+        [Required]
+        public IFormFile AadhaarCopyFile { get; set; }
+        
+        [Required]
+        public IFormFile PanCopyFile { get; set; }
     }
 }
