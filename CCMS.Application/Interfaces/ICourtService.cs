@@ -6,5 +6,6 @@ namespace CCMS.Application.Interfaces
     public interface ICourtService
     {
         Task<CourtDashboardDto> GetDashboardAsync();
+        Task<CaseResponseDto> CreateCaseAsync(CreateCaseDto dto);
     }
 }

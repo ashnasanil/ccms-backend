@@ -21,5 +21,24 @@ namespace CCMS.API.Controllers
             var result = await _courtService.GetDashboardAsync();
             return Ok(result);
         }
+
+        [HttpPost("cases")]
+        public async Task<IActionResult> CreateCaseAsync([FromForm] CCMS.Application.DTOs.Court.CreateCaseDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var result = await _courtService.CreateCaseAsync(dto);
+                return Ok(result);
+            }
+            catch (System.ArgumentException ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
     }
 }
