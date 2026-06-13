@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CCMS.API/CCMS.API.csproj" />
+  <Project Path="CCMS.Application/CCMS.Application.csproj" />
+  <Project Path="CCMS.Domain/CCMS.Domain.csproj" />
+  <Project Path="CCMS.Infrastructure/CCMS.Infrastructure.csproj" />
+</Solution>
