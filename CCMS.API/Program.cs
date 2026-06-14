@@ -2,15 +2,21 @@ using CCMS.API.Extensions;
 using CCMS.API.Middleware;
 using CCMS.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using CCMS.Application.Interfaces;
+using CCMS.Infrastructure.Services;
+using CCMS.Infrastructure.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddApiServices(builder.Configuration);
 
+// Batch Module DI
+builder.Services.AddScoped<IBatchService, BatchService>();
+builder.Services.AddHostedService<AccountValidationBackgroundService>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -31,5 +37,4 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     services.SeedDatabase();
 }
-
 app.Run();

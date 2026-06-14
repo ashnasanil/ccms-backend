@@ -1,12 +1,10 @@
-// FILE: Enums/CaseStatus.cs
-namespace CCMS.Domain.Enums
+namespace CCMS.Domain.Enums;
+
+public enum CaseStatus
 {
-    public enum CaseStatus
-    {
-        Pending,
-        AccountValidated,
-        AccountNotFound,
-        FreezeApplied,
-        BalanceProvided
-    }
+    Pending = 1,
+    AccountValidated = 2,
+    AccountNotFound = 3,
+    FreezeApplied = 4,
+    BalanceProvided = 5
 }
