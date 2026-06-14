@@ -1,7 +1,12 @@
+// FILE: Enums/CaseStatus.cs
 namespace CCMS.Domain.Enums
 {
     public enum CaseStatus
     {
-        Pending
+        Pending,
+        AccountValidated,
+        AccountNotFound,
+        FreezeApplied,
+        BalanceProvided
     }
 }

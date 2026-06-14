@@ -1,13 +1,17 @@
+// FILE: Entities/Attachment.cs
 using System;
+using CCMS.Domain.Common;
 
 namespace CCMS.Domain.Entities
 {
-    public class Attachment
+    public class Attachment : BaseEntity
     {
-        public int Id { get; set; }
-        public int CaseId { get; set; }
-        public string FileName { get; set; }
-        public string FilePath { get; set; }
-        public DateTime UploadedDate { get; set; }
+        public Guid CaseId { get; set; }
+        public string FileName { get; set; } = string.Empty;
+        public string FileType { get; set; } = string.Empty;
+        public string StoragePath { get; set; } = string.Empty;
+        public long FileSize { get; set; }
+        
+        public Case Case { get; set; } = null!;
     }
 }
