@@ -29,10 +29,10 @@ namespace CCMS.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("cases/{id}")]
-        public async Task<IActionResult> GetCaseByIdAsync(int id)
+        [HttpGet("cases/{caseNumber}")]
+        public async Task<IActionResult> GetCaseByCaseNumberAsync(string caseNumber)
         {
-            var result = await _courtService.GetCaseByIdAsync(id);
+            var result = await _courtService.GetCaseByCaseNumberAsync(caseNumber);
             if (result == null)
                 return NotFound();
 

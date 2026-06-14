@@ -13,47 +13,58 @@ namespace CCMS.Application.Services
 {
     public class CourtService : ICourtService
     {
-        public Task<CourtDashboardDto> GetDashboardAsync()
+        private readonly ICaseRepository _caseRepository;
+
+        public CourtService(ICaseRepository caseRepository)
         {
-            // TODO: Fetch dashboard statistics from the database
-            return Task.FromResult(new CourtDashboardDto());
+            _caseRepository = caseRepository;
         }
 
-        public Task<IEnumerable<CaseListDto>> GetCasesAsync()
+        public async Task<CourtDashboardDto> GetDashboardAsync()
         {
-            // TODO: Fetch from database. Stubbed for now.
-            var list = new List<CaseListDto>
+            return new CourtDashboardDto
             {
-                new CaseListDto
-                {
-                    CaseNumber = "CCMS-20260610-0001",
-                    DefendantName = "John Doe",
-                    OrderType = "Freeze Account",
-                    Status = "Pending",
-                    CreatedDate = new DateTime(2026, 6, 10, 10, 0, 0)
-                }
+                TotalCases = await _caseRepository.GetTotalCountAsync(),
+                PendingCases = await _caseRepository.GetCountByStatusAsync(CaseStatus.Pending),
+                AccountValidatedCases = await _caseRepository.GetCountByStatusAsync(CaseStatus.AccountValidated),
+                AccountNotFoundCases = await _caseRepository.GetCountByStatusAsync(CaseStatus.AccountNotFound),
+                FreezeAppliedCases = await _caseRepository.GetCountByOrderTypeAsync(OrderType.FreezeAccount),
+                BalanceProvidedCases = await _caseRepository.GetCountByOrderTypeAsync(OrderType.ProvideBalance)
             };
-            return Task.FromResult<IEnumerable<CaseListDto>>(list);
         }
 
-        public Task<CaseDetailDto> GetCaseByIdAsync(int id)
+        public async Task<IEnumerable<CaseListDto>> GetCasesAsync()
         {
-            // TODO: Fetch from database. Stubbed for now, applying masking rules.
-            var detail = new CaseDetailDto
+            var cases = await _caseRepository.GetAllAsync();
+            return cases.Select(c => new CaseListDto
             {
-                CaseNumber = "CCMS-20260610-0001",
-                ComplainantName = "Alice",
-                DefendantName = "John Doe",
-                AadhaarNumber = MaskingHelper.MaskAadhaar("123412341234"),
-                PanNumber = MaskingHelper.MaskPan("ABCDE1234F"),
-                AccountNumber = MaskingHelper.MaskAccountNumber("1234567890123456"),
-                BankName = "SBI",
-                OrderType = "Freeze Account",
-                FreezeAmount = 10000,
-                Status = "Pending",
-                CreatedDate = new DateTime(2026, 6, 10, 10, 0, 0)
+                CaseNumber = c.CaseNumber,
+                DefendantName = c.DefendantName,
+                OrderType = c.OrderType.ToString(), // Or map properly
+                Status = c.Status.ToString(),
+                CreatedDate = c.CreatedDate
+            });
+        }
+
+        public async Task<CaseDetailDto> GetCaseByCaseNumberAsync(string caseNumber)
+        {
+            var c = await _caseRepository.GetByCaseNumberAsync(caseNumber);
+            if (c == null) return null;
+
+            return new CaseDetailDto
+            {
+                CaseNumber = c.CaseNumber,
+                ComplainantName = c.ComplainantName,
+                DefendantName = c.DefendantName,
+                AadhaarNumber = MaskingHelper.MaskAadhaar(c.AadhaarNumber ?? ""),
+                PanNumber = MaskingHelper.MaskPan(c.PanNumber ?? ""),
+                AccountNumber = MaskingHelper.MaskAccountNumber(c.AccountNumber ?? ""),
+                BankName = c.BankName,
+                OrderType = c.OrderType.ToString(),
+                FreezeAmount = c.FreezeAmount,
+                Status = c.Status.ToString(),
+                CreatedDate = c.CreatedDate
             };
-            return Task.FromResult(detail);
         }
 
         public void ValidateAttachments(Microsoft.AspNetCore.Http.IFormFile courtOrder, Microsoft.AspNetCore.Http.IFormFile aadhaar, Microsoft.AspNetCore.Http.IFormFile pan)
@@ -109,11 +120,13 @@ namespace CCMS.Application.Services
             // Process Attachments
             var attachments = await ProcessAttachments(dto.CourtOrderFile, dto.AadhaarCopyFile, dto.PanCopyFile);
 
-            // Generate Case Number
-            var caseNumber = CaseNumberGenerator.Generate();
+            // Generate Case Number based on DB count to prevent duplicates across restarts
+            var totalCases = await _caseRepository.GetTotalCountAsync();
+            var dateStr = DateTime.UtcNow.ToString("yyyyMMdd");
+            var caseNumber = $"CCMS-{dateStr}-{(totalCases + 1):D4}";
             var createdDate = DateTime.UtcNow;
 
-            // Create Case Object (stubbed for architecture)
+            // Create Case Object
             var newCase = new Case
             {
                 CaseNumber = caseNumber,
@@ -128,6 +141,8 @@ namespace CCMS.Application.Services
                 Status = CaseStatus.Pending,
                 CreatedDate = createdDate
             };
+
+            await _caseRepository.AddAsync(newCase);
 
             // Return Response
             return new CaseResponseDto
