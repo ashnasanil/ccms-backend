@@ -13,13 +13,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IJwtService, JwtService>();
 
-        // Safely register IUserRepository. If DbContext is registered, it will inject it.
-        // Otherwise, it falls back to the mock implementation using the default constructor.
-        services.AddScoped<IUserRepository>(provider =>
-        {
-            var dbContext = provider.GetService<DbContext>();
-            return dbContext != null ? new UserRepository(dbContext) : new UserRepository();
-        });
+        services.AddScoped<CCMS.Application.Interfaces.Repositories.IUserRepository, UserRepository>();
 
         return services;
     }

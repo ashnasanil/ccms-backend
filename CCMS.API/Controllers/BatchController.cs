@@ -6,7 +6,7 @@ namespace CCMS.API.Controllers;
 
 [ApiController]
 [Route("api/batch")]
-[Authorize] // Assuming some general auth for batch, could be restricted to specific role if needed
+[Authorize(Roles = "CourtOfficer")]
 public class BatchController : ControllerBase
 {
     private readonly ISender _sender;

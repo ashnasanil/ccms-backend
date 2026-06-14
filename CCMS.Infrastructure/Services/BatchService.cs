@@ -2,16 +2,16 @@ using System.Diagnostics;
 using CCMS.Application.Interfaces;
 using CCMS.Domain.Entities;
 using CCMS.Domain.Enums;
-using CCMS.Infrastructure.Data;
+using CCMS.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace CCMS.Infrastructure.Services;
 
 public class BatchService : IBatchService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly AppDbContext _context;
 
-    public BatchService(ApplicationDbContext context)
+    public BatchService(AppDbContext context)
     {
         _context = context;
     }

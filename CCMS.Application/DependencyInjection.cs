@@ -12,6 +12,7 @@ namespace CCMS.Application
             
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
             services.AddValidatorsFromAssembly(assembly);
+            services.AddScoped<CCMS.Application.Interfaces.ICourtService, CCMS.Application.Services.CourtService>();
             
             return services;
         }

@@ -31,7 +31,7 @@ public class AuthService : IAuthService
             throw new UnauthorizedException("Invalid username or password.");
         }
 
-        Console.WriteLine($"[AuthService] User '{user.Username}' found. Role: {user.Role}. Stored Hash: {user.PasswordHash}");
+        Console.WriteLine($"[AuthService] User '{user.Email}' found. Role: {user.Role}. Stored Hash: {user.PasswordHash}");
 
         // Verify password using BCrypt
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);

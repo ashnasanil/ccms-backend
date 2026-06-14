@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CCMS.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialSync : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,11 +21,11 @@ namespace CCMS.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     AccountNumber = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Aadhaar = table.Column<string>(type: "varchar(12)", maxLength: 12, nullable: false)
+                    AadhaarNumber = table.Column<string>(type: "varchar(12)", maxLength: 12, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PAN = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
+                    PanNumber = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     AccountStatus = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     BankName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
@@ -46,12 +46,13 @@ namespace CCMS.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     StartedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     EndedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    ProcessedCount = table.Column<int>(type: "int", nullable: false),
+                    TotalProcessed = table.Column<int>(type: "int", nullable: false),
                     ValidatedCount = table.Column<int>(type: "int", nullable: false),
                     NotFoundCount = table.Column<int>(type: "int", nullable: false),
-                    DurationMs = table.Column<long>(type: "bigint", nullable: false),
+                    DurationMilliseconds = table.Column<long>(type: "bigint", nullable: false),
                     Status = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    IsManualRun = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
@@ -72,19 +73,22 @@ namespace CCMS.Infrastructure.Migrations
                     OrderType = table.Column<int>(type: "int", nullable: false),
                     DefendantName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DefendantAadhaar = table.Column<string>(type: "varchar(12)", maxLength: 12, nullable: false)
+                    FreezeAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    ComplainantName = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DefendantPAN = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
+                    AadhaarNumber = table.Column<string>(type: "varchar(12)", maxLength: 12, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DefendantAccountNumber = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                    PanNumber = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DefendantBankName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                    AccountNumber = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    FreezeAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    MatchedAccountNumber = table.Column<string>(type: "longtext", nullable: false)
+                    BankName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    MatchedBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    MatchedAccountStatus = table.Column<string>(type: "longtext", nullable: false)
+                    CreatedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    MatchedAccountNumber = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    MatchedBalance = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: true),
+                    MatchedAccountStatus = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)

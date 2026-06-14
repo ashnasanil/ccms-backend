@@ -22,6 +22,18 @@ namespace CCMS.Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+            modelBuilder.Entity<BankCustomer>()
+                .Property(x => x.Balance)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Case>()
+                .Property(x => x.FreezeAmount)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Case>()
+                .Property(x => x.MatchedBalance)
+                .HasPrecision(18, 2);
         }
     }
 }

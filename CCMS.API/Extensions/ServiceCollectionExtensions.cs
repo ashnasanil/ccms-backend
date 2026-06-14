@@ -3,7 +3,7 @@ using CCMS.Application;
 using CCMS.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+
 
 namespace CCMS.API.Extensions;
 
@@ -17,23 +17,23 @@ public static class ServiceCollectionExtensions
         // Setup Swagger
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "CCMS API", Version = "v1" });
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "CCMS API", Version = "v1" });
+            c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
             {
                 Description = "JWT Authorization header using the Bearer scheme.",
                 Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
+                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
                 Scheme = "bearer"
             });
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
             {
                 {
-                    new OpenApiSecurityScheme
+                    new Microsoft.OpenApi.Models.OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
+                        Reference = new Microsoft.OpenApi.Models.OpenApiReference
                         {
-                            Type = ReferenceType.SecurityScheme,
+                            Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
                             Id = "Bearer"
                         }
                     },

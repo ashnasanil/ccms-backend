@@ -102,10 +102,10 @@ namespace CCMS.Infrastructure.Services
             }
 
             batchLog.EndedAt = DateTime.UtcNow;
-            batchLog.ProcessedCount = processedCount;
+            batchLog.TotalProcessed = processedCount;
             batchLog.ValidatedCount = validatedCount;
             batchLog.NotFoundCount = notFoundCount;
-            batchLog.DurationMs = (long)(batchLog.EndedAt.Value - batchLog.StartedAt).TotalMilliseconds;
+            batchLog.DurationMilliseconds = (long)(batchLog.EndedAt.Value - batchLog.StartedAt).TotalMilliseconds;
             batchLog.Status = "Completed";
 
             await context.SaveChangesAsync(stoppingToken);
@@ -115,24 +115,24 @@ namespace CCMS.Infrastructure.Services
 
         private async Task<BankCustomer?> FindCustomerAsync(AppDbContext context, Case @case, CancellationToken stoppingToken)
         {
-            if (!string.IsNullOrWhiteSpace(@case.DefendantAccountNumber))
+            if (!string.IsNullOrWhiteSpace(@case.AccountNumber))
             {
                 var match = await context.BankCustomers
-                    .FirstOrDefaultAsync(c => c.AccountNumber == @case.DefendantAccountNumber, stoppingToken);
+                    .FirstOrDefaultAsync(c => c.AccountNumber == @case.AccountNumber, stoppingToken);
                 if (match != null) return match;
             }
 
-            if (!string.IsNullOrWhiteSpace(@case.DefendantAadhaar))
+            if (!string.IsNullOrWhiteSpace(@case.AadhaarNumber))
             {
                 var match = await context.BankCustomers
-                    .FirstOrDefaultAsync(c => c.Aadhaar == @case.DefendantAadhaar, stoppingToken);
+                    .FirstOrDefaultAsync(c => c.AadhaarNumber == @case.AadhaarNumber, stoppingToken);
                 if (match != null) return match;
             }
 
-            if (!string.IsNullOrWhiteSpace(@case.DefendantPAN))
+            if (!string.IsNullOrWhiteSpace(@case.PanNumber))
             {
                 var match = await context.BankCustomers
-                    .FirstOrDefaultAsync(c => c.PAN == @case.DefendantPAN, stoppingToken);
+                    .FirstOrDefaultAsync(c => c.PanNumber == @case.PanNumber, stoppingToken);
                 if (match != null) return match;
             }
 

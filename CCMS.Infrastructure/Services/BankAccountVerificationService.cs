@@ -18,8 +18,8 @@ namespace CCMS.Infrastructure.Services
         {
             var match = await _context.BankCustomers.FirstOrDefaultAsync(c => 
                 (!string.IsNullOrEmpty(accountNumber) && c.AccountNumber == accountNumber) ||
-                (!string.IsNullOrEmpty(aadhaar) && c.Aadhaar == aadhaar) ||
-                (!string.IsNullOrEmpty(pan) && c.PAN == pan)
+                (!string.IsNullOrEmpty(aadhaar) && c.AadhaarNumber == aadhaar) ||
+                (!string.IsNullOrEmpty(pan) && c.PanNumber == pan)
             );
 
             if (match != null)

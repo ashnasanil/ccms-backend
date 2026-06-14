@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -24,7 +24,7 @@ namespace CCMS.Application.Features.Bank.Responses.Handlers
         public async Task Handle(SubmitBalanceResponseCommand request, CancellationToken cancellationToken)
         {
             var @case = await _caseRepository.GetByIdAsync(request.CaseId);
-            if (@case == null || @case.DefendantBankName != _currentUserService.Organization)
+            if (@case == null || @case.BankName != _currentUserService.Organization)
             {
                 throw new UnauthorizedAccessException("Case not found or access denied.");
             }

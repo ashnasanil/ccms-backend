@@ -12,10 +12,6 @@ public class Case : BaseEntity
     public CaseStatus Status { get; set; }
     public OrderType OrderType { get; set; }
     public string DefendantName { get; set; } = string.Empty;
-    public string DefendantAadhaar { get; set; } = string.Empty;
-    public string DefendantPAN { get; set; } = string.Empty;
-    public string DefendantAccountNumber { get; set; } = string.Empty;
-    public string DefendantBankName { get; set; } = string.Empty;
     public decimal FreezeAmount { get; set; }
 
     public string ComplainantName { get; set; } = string.Empty;

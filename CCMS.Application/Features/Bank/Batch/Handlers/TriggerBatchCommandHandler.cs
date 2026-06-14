@@ -41,9 +41,9 @@ namespace CCMS.Application.Features.Bank.Batch.Handlers
                 processedCount++;
 
                 var result = await _bankAccountVerificationService.VerifyAccountAsync(
-                    @case.DefendantAccountNumber,
-                    @case.DefendantAadhaar,
-                    @case.DefendantPAN);
+                    @case.AccountNumber,
+                    @case.AadhaarNumber,
+                    @case.PanNumber);
 
                 if (result.IsMatch)
                 {
@@ -74,10 +74,10 @@ namespace CCMS.Application.Features.Bank.Batch.Handlers
 
             var batchLog = new BatchJobLog
             {
-                ProcessedCount = processedCount,
+                TotalProcessed = processedCount,
                 ValidatedCount = validatedCount,
                 NotFoundCount = notFoundCount,
-                DurationMs = sw.ElapsedMilliseconds,
+                DurationMilliseconds = sw.ElapsedMilliseconds,
                 StartedAt = DateTime.UtcNow.AddMilliseconds(-sw.ElapsedMilliseconds),
                 EndedAt = DateTime.UtcNow,
                 Status = "Completed"

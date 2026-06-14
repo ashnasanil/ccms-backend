@@ -12,10 +12,10 @@ namespace CCMS.Infrastructure.Persistence.Configurations
             builder.Property(c => c.CaseNumber).IsRequired().HasMaxLength(50);
             builder.HasIndex(c => c.CaseNumber).IsUnique();
             builder.Property(c => c.DefendantName).IsRequired().HasMaxLength(100);
-            builder.Property(c => c.DefendantAadhaar).HasMaxLength(12);
-            builder.Property(c => c.DefendantPAN).HasMaxLength(10);
-            builder.Property(c => c.DefendantAccountNumber).HasMaxLength(20);
-            builder.Property(c => c.DefendantBankName).HasMaxLength(100);
+            builder.Property(c => c.AadhaarNumber).HasMaxLength(12);
+            builder.Property(c => c.PanNumber).HasMaxLength(10);
+            builder.Property(c => c.AccountNumber).HasMaxLength(20);
+            builder.Property(c => c.BankName).HasMaxLength(100);
             builder.Property(c => c.FreezeAmount).HasColumnType("decimal(18,2)");
             builder.Property(c => c.MatchedBalance).HasColumnType("decimal(18,2)");
             

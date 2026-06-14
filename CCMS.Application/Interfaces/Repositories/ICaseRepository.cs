@@ -11,6 +11,8 @@ namespace CCMS.Application.Interfaces.Repositories
         Task<Case?> GetByIdAsync(Guid id);
         Task<IEnumerable<Case>> GetCasesForBankAsync(string bankName, CaseStatus? status);
         Task<IEnumerable<Case>> GetPendingCasesAsync();
+        Task<IEnumerable<Case>> GetAllAsync();
+        Task AddAsync(Case @case);
         Task UpdateAsync(Case @case);
         Task AddBatchLogAsync(BatchJobLog log);
     }

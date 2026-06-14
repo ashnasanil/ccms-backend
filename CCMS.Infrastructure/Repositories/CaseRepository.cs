@@ -33,7 +33,7 @@ namespace CCMS.Infrastructure.Repositories
 
             if (!string.IsNullOrEmpty(bankName))
             {
-                query = query.Where(c => c.DefendantBankName == bankName);
+                query = query.Where(c => c.BankName == bankName);
             }
 
             if (status.HasValue)
@@ -52,6 +52,19 @@ namespace CCMS.Infrastructure.Repositories
             return await _context.Cases
                 .Where(c => c.Status == CaseStatus.Pending)
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Case>> GetAllAsync()
+        {
+            return await _context.Cases
+                .OrderByDescending(c => c.CreatedAt)
+                .ToListAsync();
+        }
+
+        public async Task AddAsync(Case @case)
+        {
+            await _context.Cases.AddAsync(@case);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Case @case)

@@ -68,7 +68,7 @@ namespace CCMS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("Aadhaar")
+                    b.Property<string>("AadhaarNumber")
                         .IsRequired()
                         .HasMaxLength(12)
                         .HasColumnType("varchar(12)");
@@ -83,6 +83,7 @@ namespace CCMS.Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<decimal>("Balance")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("BankName")
@@ -93,7 +94,7 @@ namespace CCMS.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("PAN")
+                    b.Property<string>("PanNumber")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
@@ -118,16 +119,16 @@ namespace CCMS.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<long>("DurationMs")
+                    b.Property<long>("DurationMilliseconds")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("EndedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("NotFoundCount")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsManualRun")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("ProcessedCount")
+                    b.Property<int>("NotFoundCount")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartedAt")
@@ -137,6 +138,9 @@ namespace CCMS.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
+
+                    b.Property<int>("TotalProcessed")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)");
@@ -155,55 +159,62 @@ namespace CCMS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("AadhaarNumber")
+                        .IsRequired()
+                        .HasMaxLength(12)
+                        .HasColumnType("varchar(12)");
+
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("BankName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<string>("CaseNumber")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<string>("ComplainantName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("DefendantAadhaar")
-                        .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("varchar(12)");
-
-                    b.Property<string>("DefendantAccountNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<string>("DefendantBankName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("DefendantName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<string>("DefendantPAN")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
-
                     b.Property<decimal>("FreezeAmount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("MatchedAccountNumber")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("MatchedAccountStatus")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<decimal?>("MatchedBalance")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("OrderType")
                         .HasColumnType("int");
+
+                    b.Property<string>("PanNumber")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");

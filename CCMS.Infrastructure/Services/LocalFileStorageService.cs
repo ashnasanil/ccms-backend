@@ -5,10 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace CCMS.Infrastructure.Services
 {
-    public interface ILocalFileStorageService
-    {
-        Task<string> SaveFileAsync(IFormFile file);
-    }
+    using CCMS.Application.Interfaces.Services;
 
     public class LocalFileStorageService : ILocalFileStorageService
     {

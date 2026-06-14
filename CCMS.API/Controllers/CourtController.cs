@@ -6,6 +6,7 @@ namespace CCMS.API.Controllers
 {
     [ApiController]
     [Route("api/court")]
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "CourtOfficer")]
     public class CourtController : ControllerBase
     {
         private readonly ICourtService _courtService;
@@ -30,7 +31,7 @@ namespace CCMS.API.Controllers
         }
 
         [HttpGet("cases/{id}")]
-        public async Task<IActionResult> GetCaseByIdAsync(int id)
+        public async Task<IActionResult> GetCaseByIdAsync(System.Guid id)
         {
             var result = await _courtService.GetCaseByIdAsync(id);
             if (result == null)

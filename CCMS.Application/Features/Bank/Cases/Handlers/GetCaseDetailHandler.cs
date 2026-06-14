@@ -26,7 +26,7 @@ namespace CCMS.Application.Features.Bank.Cases.Handlers
         public async Task<CaseDetailDto> Handle(GetCaseDetailQuery request, CancellationToken cancellationToken)
         {
             var @case = await _caseRepository.GetByIdAsync(request.CaseId);
-            if (@case == null || @case.DefendantBankName != _currentUserService.Organization)
+            if (@case == null || @case.BankName != _currentUserService.Organization)
             {
                 throw new UnauthorizedAccessException("Case not found or access denied.");
             }
@@ -38,11 +38,11 @@ namespace CCMS.Application.Features.Bank.Cases.Handlers
                 Status = @case.Status,
                 OrderType = @case.OrderType,
                 DefendantName = @case.DefendantName,
-                DefendantAadhaar = _maskingService.MaskAadhaar(@case.DefendantAadhaar),
-                DefendantPAN = _maskingService.MaskPAN(@case.DefendantPAN),
-                DefendantAccountNumber = _maskingService.MaskAccountNumber(@case.DefendantAccountNumber),
-                DefendantBankName = @case.DefendantBankName,
-                MatchedAccountNumber = _maskingService.MaskAccountNumber(@case.MatchedAccountNumber),
+                DefendantAadhaar = _maskingService.MaskAadhaar(@case.AadhaarNumber),
+                DefendantPAN = _maskingService.MaskPAN(@case.PanNumber),
+                DefendantAccountNumber = _maskingService.MaskAccountNumber(@case.AccountNumber),
+                DefendantBankName = @case.BankName,
+                MatchedAccountNumber = string.IsNullOrEmpty(@case.MatchedAccountNumber) ? "" : _maskingService.MaskAccountNumber(@case.MatchedAccountNumber),
                 MatchedBalance = @case.MatchedBalance,
                 MatchedAccountStatus = @case.MatchedAccountStatus,
                 Attachments = @case.Attachments.Select(a => new AttachmentDto
