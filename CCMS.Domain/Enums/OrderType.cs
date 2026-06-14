@@ -1,8 +1,9 @@
+// FILE: Enums/OrderType.cs
 namespace CCMS.Domain.Enums
 {
     public enum OrderType
     {
-        FreezeAccount,
+        Freeze,
         BalanceEnquiry
     }
 }

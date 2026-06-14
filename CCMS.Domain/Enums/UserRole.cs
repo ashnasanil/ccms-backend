@@ -1,7 +1,9 @@
-namespace CCMS.Domain.Enums;
-
-public enum UserRole
+// FILE: Enums/UserRole.cs
+namespace CCMS.Domain.Enums
 {
-    Court,
-    Bank
+    public enum UserRole
+    {
+        CourtOfficer,
+        BankOfficer
+    }
 }

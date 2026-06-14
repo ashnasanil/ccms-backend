@@ -1,0 +1,148 @@
+@host = http://localhost:5107
+@bank_email = bank@ccms.local
+@court_email = court@ccms.local
+@password = Password@123
+
+# ==========================================
+# 1. AUTHENTICATION
+# ==========================================
+
+### Login as Bank Officer
+# @name login
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{bank_email}}",
+  "password": "{{password}}"
+}
+
+### Expected Response:
+# HTTP/1.1 200 OK
+# {
+#   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+#   "email": "bank@ccms.local",
+#   "role": "BankOfficer",
+#   "fullName": "Bank Officer",
+#   "organization": "Bank"
+# }
+
+@auth_token = {{login.response.body.token}}
+
+# ==========================================
+# 2. BANK DASHBOARD
+# ==========================================
+
+### Get Bank Dashboard Statistics
+GET {{host}}/api/bank/dashboard
+Authorization: Bearer {{auth_token}}
+
+### Expected Response:
+# HTTP/1.1 200 OK
+# {
+#   "totalCases": 10,
+#   "pendingActionCases": 3,
+#   "frozenCases": 5,
+#   "balanceReportedCases": 2
+# }
+
+# ==========================================
+# 3. BANK CASES
+# ==========================================
+
+### Get All Bank Cases
+GET {{host}}/api/bank/cases
+Authorization: Bearer {{auth_token}}
+
+### Expected Response:
+# HTTP/1.1 200 OK
+# [
+#   {
+#     "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+#     "caseNumber": "CASE-2026-001",
+#     "status": "AssignedToBank",
+#     "orderType": "Freeze",
+#     "defendantName": "John Doe",
+#     "defendantAccountNumber": "1234567890",
+#     "freezeAmount": 5000.00
+#   }
+# ]
+
+### Get Specific Case Details
+# Note: Replace {id} with an actual Case ID from the previous request
+@case_id = 3fa85f64-5717-4562-b3fc-2c963f66afa6
+GET {{host}}/api/bank/cases/{{case_id}}
+Authorization: Bearer {{auth_token}}
+
+### Expected Response:
+# HTTP/1.1 200 OK
+# {
+#   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+#   "caseNumber": "CASE-2026-001",
+#   ...
+# }
+
+# ==========================================
+# 4. RESPONSES
+# ==========================================
+
+### Submit Freeze Response
+POST {{host}}/api/bank/cases/{{case_id}}/freeze
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "caseId": "{{case_id}}",
+  "freezeAmount": 5000.00,
+  "remarks": "Successfully frozen the amount as requested."
+}
+
+### Expected Response:
+# HTTP/1.1 200 OK
+
+### Submit Balance Response
+POST {{host}}/api/bank/cases/{{case_id}}/balance
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "caseId": "{{case_id}}",
+  "balanceAmount": 12500.50,
+  "remarks": "Current balance reported."
+}
+
+### Expected Response:
+# HTTP/1.1 200 OK
+
+# ==========================================
+# 5. BATCH OPERATIONS
+# ==========================================
+
+### Trigger Manual Batch Run
+POST {{host}}/api/batch/run
+Authorization: Bearer {{auth_token}}
+
+### Expected Response:
+# HTTP/1.1 200 OK
+# {
+#   "success": true,
+#   "message": "Batch job triggered successfully"
+# }
+
+### Get Batch Logs
+GET {{host}}/api/batch/logs
+Authorization: Bearer {{auth_token}}
+
+### Expected Response:
+# HTTP/1.1 200 OK
+# [
+#   {
+#     "id": "...",
+#     "startedAt": "2026-06-13T10:00:00Z",
+#     "endedAt": "2026-06-13T10:05:00Z",
+#     "status": "Completed",
+#     "processedCount": 100,
+#     "validatedCount": 95,
+#     "notFoundCount": 5
+#   }
+# ]
