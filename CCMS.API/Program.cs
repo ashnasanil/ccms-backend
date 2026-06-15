@@ -1,4 +1,5 @@
 using CCMS.API.Extensions;
+using Serilog;
 using CCMS.API.Middleware;
 using CCMS.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +8,9 @@ using CCMS.Infrastructure.Services;
 using CCMS.Infrastructure.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
 
 // Add services to the container.
 builder.Services.AddApiServices(builder.Configuration);
