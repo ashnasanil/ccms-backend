@@ -39,7 +39,7 @@ spec:
     spec:
       containers:
       - name: ccms-backend
-        image: ccmsacr.azurecr.io/ccms-backend:latest
+        image: <ACR_NAME>.azurecr.io/ccms-backend:latest
         ports:
         - containerPort: 80
         envFrom:

@@ -1,73 +1,51 @@
 pipeline {
     agent any
-
     environment {
-        // Azure Settings
-        ACR = 'ccmsacr'
-        RG = 'ccms-rg'
-        AKS = 'ccms-aks'
-        
-        // Image Settings
-        IMAGE = 'ccms-backend'
-        IMAGE_NAME = "${ACR}.azurecr.io/${IMAGE}"
-        TAG = "${env.BUILD_NUMBER}"
-        
-        // Jenkins Credentials IDs
-        ACR_CREDENTIAL_ID = 'acr-credentials'
-        AKS_CREDENTIAL_ID = 'aks-credentials'
-        
-        // Ingress Settings
-        INGRESS_HOST = 'ccms.local'
+        ACR     = 'ccmsacr'
+        RG      = 'ccms-rg'
+        AKS     = 'ccms-aks'
+        IMAGE   = 'ccms-backend'
+        AZ_CLIENT_ID     = credentials('azure-client-id')
+        AZ_CLIENT_SECRET = credentials('azure-client-secret')
+        AZ_TENANT_ID     = credentials('azure-tenant-id')
+        DB_CONNECTION    = credentials('db-connection-string')
+        JWT_KEY          = credentials('jwt-secret-key')
     }
-
     stages {
         stage('Checkout') {
+            steps { checkout scm }
+        }
+        stage('Build image') {
             steps {
-                checkout scm
+                bat 'docker build --platform linux/amd64 -t %ACR%.azurecr.io/%IMAGE%:%BUILD_NUMBER% -t %ACR%.azurecr.io/%IMAGE%:latest .'
             }
         }
-
-        stage('Build & Push Image') {
+        stage('Login to Azure') {
             steps {
-                script {
-                    docker.withRegistry("https://${ACR}.azurecr.io", ACR_CREDENTIAL_ID) {
-                        def app = docker.build("${IMAGE_NAME}:${TAG}", "-f Dockerfile .")
-                        app.push()
-                    }
-                }
+                bat 'az login --service-principal -u %AZ_CLIENT_ID% -p %AZ_CLIENT_SECRET% --tenant %AZ_TENANT_ID%'
+                bat 'az acr login -n %ACR%'
             }
         }
-
+        stage('Push to ACR') {
+            steps {
+                bat 'docker push %ACR%.azurecr.io/%IMAGE%:%BUILD_NUMBER%'
+                bat 'docker push %ACR%.azurecr.io/%IMAGE%:latest'
+            }
+        }
         stage('Deploy to AKS') {
-            environment {
-                DB_CONNECTION = credentials('db-connection-string')
-                JWT_KEY = credentials('jwt-secret-key')
-            }
             steps {
-                withKubeConfig([credentialsId: AKS_CREDENTIAL_ID]) {
-                    sh """
-                    # 1. Update image tags
-                    sed -i "s|ccmsacr.azurecr.io/ccms-backend:latest|${IMAGE_NAME}:${TAG}|g" k8s/02-api.yaml
-                    
-                    # 2. Update Ingress Host
-                    sed -i "s|#{ingressHost}#|${INGRESS_HOST}|g" k8s/02-api.yaml
-                    
-                    # 3. Update Secrets
-                    sed -i "s|#{ConnectionStrings__DefaultConnection}#|\${DB_CONNECTION}|g" k8s/02-api.yaml
-                    sed -i "s|#{Jwt__Key}#|\${JWT_KEY}|g" k8s/02-api.yaml
-                    
-                    # 4. Apply manifests to AKS
-                    kubectl apply -f k8s/01-mysql.yaml
-                    kubectl apply -f k8s/02-api.yaml
-                    """
-                }
+                bat 'az aks get-credentials -n %AKS% -g %RG% --overwrite-existing'
+                powershell '(Get-Content k8s/02-api.yaml) -replace "<ACR_NAME>", $env:ACR -replace "#{ConnectionStrings__DefaultConnection}#", $env:DB_CONNECTION -replace "#{Jwt__Key}#", $env:JWT_KEY | Set-Content $env:TEMP\\02-api.yaml'
+                bat 'kubectl apply -f k8s/01-mysql.yaml'
+                bat 'kubectl apply -f %TEMP%\\02-api.yaml'
+                bat 'kubectl set image deployment/ccms-backend ccms-backend=%ACR%.azurecr.io/%IMAGE%:%BUILD_NUMBER%'
+                bat 'kubectl rollout status deployment/ccms-backend --timeout=120s'
             }
         }
     }
-    
     post {
-        always {
-            cleanWs()
-        }
+        success { echo "ccms-backend ${BUILD_NUMBER} deployed to AKS." }
+        failure { echo 'ccms-backend pipeline failed.' }
+        always  { bat 'az logout || exit 0' }
     }
 }
