@@ -45,7 +45,7 @@ namespace CCMS.Application.Features.Bank.Responses.Handlers
                 ResponseType = ResponseType.BalanceProvided,
                 BalanceAmount = request.BalanceAmount,
                 Remarks = request.Remarks,
-                RespondedBy = _currentUserService.UserId ?? "Unknown",
+                RespondedBy = _currentUserService.FullName ?? "Unknown",
                 RespondedAt = DateTime.UtcNow
             };
 

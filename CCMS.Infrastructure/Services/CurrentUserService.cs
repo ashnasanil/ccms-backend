@@ -14,6 +14,7 @@ namespace CCMS.Infrastructure.Services
         }
 
         public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        public string? FullName => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
         public string? UserRole => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Role);
         public string? Organization => _httpContextAccessor.HttpContext?.User?.FindFirstValue("Organization");
     }
