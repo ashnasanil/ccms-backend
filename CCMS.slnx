@@ -3,4 +3,5 @@
   <Project Path="CCMS.Application/CCMS.Application.csproj" />
   <Project Path="CCMS.Domain/CCMS.Domain.csproj" />
   <Project Path="CCMS.Infrastructure/CCMS.Infrastructure.csproj" />
+  <Project Path="CCMS.IntegrationTests/CCMS.IntegrationTests.csproj" />
 </Solution>
