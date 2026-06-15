@@ -5,8 +5,19 @@ using Microsoft.Extensions.DependencyInjection;
 using CCMS.Application.Interfaces;
 using CCMS.Infrastructure.Services;
 using CCMS.Infrastructure.BackgroundServices;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/ccms-log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddApiServices(builder.Configuration);

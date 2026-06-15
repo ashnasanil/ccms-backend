@@ -21,7 +21,9 @@ namespace CCMS.Infrastructure.Services
         public string GenerateToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Secret"] ?? "SuperSecretKeyWithLongLength123456789!");
+            var secret = _configuration["Jwt:Secret"];
+            if (string.IsNullOrEmpty(secret)) throw new InvalidOperationException("JWT Secret is not configured.");
+            var key = Encoding.ASCII.GetBytes(secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]

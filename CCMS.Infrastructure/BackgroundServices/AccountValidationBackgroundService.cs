@@ -29,7 +29,7 @@ public class AccountValidationBackgroundService
             await batchService.RunAsync(false);
 
             await Task.Delay(
-                TimeSpan.FromMinutes(1),
+                TimeSpan.FromMinutes(15),
                 stoppingToken);
         }
     }
