@@ -16,18 +16,21 @@ public class BankResponsesController : ControllerBase
         _sender = sender;
     }
 
+    public record SubmitFreezeResponseDto(decimal FreezeAmount, string Remarks);
+    public record SubmitBalanceResponseDto(decimal BalanceAmount, string Remarks);
+
     [HttpPost("{id:guid}/freeze")]
-    public async Task<IActionResult> SubmitFreezeResponse(Guid id, [FromBody] CCMS.Application.Features.Bank.Responses.Commands.SubmitFreezeResponseCommand command)
+    public async Task<IActionResult> SubmitFreezeResponse(Guid id, [FromBody] SubmitFreezeResponseDto dto)
     {
-        if (id != command.CaseId) return BadRequest();
+        var command = new CCMS.Application.Features.Bank.Responses.Commands.SubmitFreezeResponseCommand(id, dto.FreezeAmount, dto.Remarks);
         await _sender.Send(command); 
         return Ok();
     }
 
     [HttpPost("{id:guid}/balance")]
-    public async Task<IActionResult> SubmitBalanceResponse(Guid id, [FromBody] CCMS.Application.Features.Bank.Responses.Commands.SubmitBalanceResponseCommand command)
+    public async Task<IActionResult> SubmitBalanceResponse(Guid id, [FromBody] SubmitBalanceResponseDto dto)
     {
-        if (id != command.CaseId) return BadRequest();
+        var command = new CCMS.Application.Features.Bank.Responses.Commands.SubmitBalanceResponseCommand(id, dto.BalanceAmount, dto.Remarks);
         await _sender.Send(command); 
         return Ok();
     }

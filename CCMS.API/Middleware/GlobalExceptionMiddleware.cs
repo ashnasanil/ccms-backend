@@ -31,17 +31,22 @@ public class GlobalExceptionMiddleware
     {
         context.Response.ContentType = "application/json";
         
-        var response = new
+        var statusCode = exception switch
         {
-            Error = "An internal server error occurred.",
-            Message = exception.Message, // In production, consider hiding detailed message
-            StatusCode = (int)HttpStatusCode.InternalServerError
+            InvalidOperationException => (int)HttpStatusCode.BadRequest,
+            ArgumentException => (int)HttpStatusCode.BadRequest,
+            _ => (int)HttpStatusCode.InternalServerError
         };
 
-        // You can add specific exception type handling here for NotFound, BadRequest, etc.
-        // e.g., if (exception is ValidationException) { context.Response.StatusCode = 400; response.StatusCode = 400; response.Message = ... }
+        var response = new
+        {
+            Error = statusCode == 400 ? "Bad Request" : "An internal server error occurred.",
+            Message = exception.Message, 
+            InnerException = exception.InnerException?.Message ?? "No inner exception available",
+            StatusCode = statusCode
+        };
 
-        context.Response.StatusCode = response.StatusCode;
+        context.Response.StatusCode = statusCode;
 
         return context.Response.WriteAsync(JsonSerializer.Serialize(response));
     }

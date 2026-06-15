@@ -156,8 +156,8 @@ namespace CCMS.Application.Services
             var attachments = await ProcessAttachments(caseId, dto.CourtOrderFile, dto.AadhaarCopyFile, dto.PanCopyFile);
 
             var today = DateTime.UtcNow;
-            var dailyCount = await _caseRepository.GetDailyCaseCountAsync(today);
-            var sequenceNumber = (dailyCount + 1).ToString("D4");
+            var maxSequence = await _caseRepository.GetDailyCaseCountAsync(today);
+            var sequenceNumber = (maxSequence + 1).ToString("D4");
             var caseNumber = $"CCMS-{today:yyyyMMdd}-{sequenceNumber}";
 
             var newCase = new Case

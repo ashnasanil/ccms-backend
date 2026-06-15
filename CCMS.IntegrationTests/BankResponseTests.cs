@@ -86,9 +86,9 @@ namespace CCMS.IntegrationTests
 
             // 3. Login as Bank Officer and submit freeze response
             await AuthenticateAsBankOfficerAsync();
-            var freezeCommand = new SubmitFreezeResponseCommand(caseId, 5000, "Account frozen");
+            var freezeDto = new CCMS.API.Controllers.BankResponsesController.SubmitFreezeResponseDto(5000, "Account frozen");
 
-            var bankResponse = await _client.PostAsJsonAsync($"/api/bank/cases/{caseId}/freeze", freezeCommand);
+            var bankResponse = await _client.PostAsJsonAsync($"/api/bank/cases/{caseId}/freeze", freezeDto);
             bankResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
             // 4. Verify Court sees it as FreezeApplied
@@ -115,9 +115,9 @@ namespace CCMS.IntegrationTests
 
             // 3. Login as Bank Officer and submit balance response
             await AuthenticateAsBankOfficerAsync();
-            var balanceCommand = new SubmitBalanceResponseCommand(caseId, 50000, "Balance provided");
+            var balanceDto = new CCMS.API.Controllers.BankResponsesController.SubmitBalanceResponseDto(50000, "Balance provided");
 
-            var bankResponse = await _client.PostAsJsonAsync($"/api/bank/cases/{caseId}/balance", balanceCommand);
+            var bankResponse = await _client.PostAsJsonAsync($"/api/bank/cases/{caseId}/balance", balanceDto);
             bankResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
             // 4. Verify Court sees it as BalanceProvided

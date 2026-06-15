@@ -6,7 +6,7 @@ namespace CCMS.API.Controllers;
 
 [ApiController]
 [Route("api/batch")]
-[Authorize(Roles = "BankOfficer")]
+[Authorize(Roles = "CourtOfficer,BankOfficer")]
 public class BatchController : ControllerBase
 {
     private readonly ISender _sender;
