@@ -71,6 +71,15 @@ public class BatchService : IBatchService
                 currentCase.Status =
                     CaseStatus.AccountNotFound;
 
+                currentCase.CaseResponse = new CaseResponse
+                {
+                    CaseId = currentCase.Id,
+                    ResponseType = ResponseType.BalanceProvided, // Using existing enum value as system default for closed cases
+                    Remarks = "No account found in bank records.",
+                    RespondedBy = "System Batch Job",
+                    RespondedAt = DateTime.UtcNow
+                };
+
                 notFoundCount++;
             }
         }

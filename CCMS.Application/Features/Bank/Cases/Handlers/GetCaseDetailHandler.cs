@@ -49,7 +49,7 @@ namespace CCMS.Application.Features.Bank.Cases.Handlers
                 {
                     Id = a.Id,
                     FileName = a.FileName,
-                    FilePath = a.StoragePath
+                    FilePath = $"/api/attachments/{System.IO.Path.GetFileName(a.StoragePath)}"
                 }).ToList(),
                 ExistingResponse = @case.CaseResponse == null ? null : new CaseResponseDto
                 {

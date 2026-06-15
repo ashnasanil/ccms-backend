@@ -23,6 +23,19 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
+var attachmentsPath = Path.Combine(Directory.GetCurrentDirectory(), "Storage", "Attachments");
+if (!Directory.Exists(attachmentsPath))
+{
+    Directory.CreateDirectory(attachmentsPath);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(attachmentsPath),
+    RequestPath = "/api/attachments"
+});
+
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 

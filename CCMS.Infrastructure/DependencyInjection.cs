@@ -36,8 +36,6 @@ namespace CCMS.Infrastructure
             services.AddScoped<ILocalFileStorageService, LocalFileStorageService>();
             services.AddScoped<IBankAccountVerificationService, BankAccountVerificationService>();
 
-            services.AddHostedService<BatchValidationService>();
-
             return services;
         }
 
@@ -45,6 +43,7 @@ namespace CCMS.Infrastructure
         {
             using var scope = serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
             if (context.Database.IsRelational())
             {
                 context.Database.Migrate();
@@ -79,42 +78,18 @@ namespace CCMS.Infrastructure
                     new BankCustomer { AccountNumber = "1234567890", AadhaarNumber = "123456789012", PanNumber = "ABCDE1234F", Balance = 50000.00m, AccountStatus = "Active", BankName = "Test Bank" },
                     new BankCustomer { AccountNumber = "0987654321", AadhaarNumber = "210987654321", PanNumber = "FGHIJ5678K", Balance = 1500.50m, AccountStatus = "Dormant", BankName = "Test Bank" }
                 );
+                context.SaveChanges();
+            }
+            if (context.BankCustomers.Count() <= 2)
+            {
+                context.BankCustomers.AddRange(
+                    new BankCustomer { AccountNumber = "1122334455", AadhaarNumber = "111122223333", PanNumber = "ABCDE1111F", Balance = 120000.00m, AccountStatus = "Active", BankName = "Test Bank" },
+                    new BankCustomer { AccountNumber = "9988776655", AadhaarNumber = "999988887777", PanNumber = "ZYXWV9999U", Balance = 10.50m, AccountStatus = "Frozen", BankName = "Test Bank" }
+                );
+                context.SaveChanges();
             }
 
-            if (!context.Cases.Any())
-            {
-                context.Cases.AddRange(
-                    new Case
-                    {
-                        Id = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6"),
-                        CaseNumber = "CASE-2026-001",
-                        DefendantName = "John Doe",
-                        AccountNumber = "1234567890",
-                        BankName = "Test Bank",
-                        AadhaarNumber = "123456789012",
-                        PanNumber = "ABCDE1234F",
-                        OrderType = OrderType.Freeze,
-                        FreezeAmount = 5000.00m,
-                        Status = CaseStatus.Pending,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    },
-                    new Case
-                    {
-                        Id = Guid.NewGuid(),
-                        CaseNumber = "CASE-2026-002",
-                        DefendantName = "Jane Smith",
-                        AccountNumber = "0987654321",
-                        BankName = "Test Bank",
-                        AadhaarNumber = "210987654321",
-                        PanNumber = "FGHIJ5678K",
-                        OrderType = OrderType.BalanceEnquiry,
-                        Status = CaseStatus.Pending,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    }
-                );
-            }
+            // Cases are intentionally NOT seeded to allow starting from scratch
 
             context.SaveChanges();
         }

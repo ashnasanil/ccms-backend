@@ -14,6 +14,15 @@ public static class ServiceCollectionExtensions
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowFrontend",
+                builder => builder.SetIsOriginAllowed(origin => true)
+                                  .AllowAnyMethod()
+                                  .AllowAnyHeader()
+                                  .AllowCredentials());
+        });
+        
         // Setup Swagger
         services.AddSwaggerGen(c =>
         {
@@ -42,8 +51,11 @@ public static class ServiceCollectionExtensions
             });
         });
 
-        // Setup JWT Authentication
-        var jwtSecret = configuration["Jwt:Secret"] ?? "SuperSecretKeyWithLongLength123456789!"; // Fallback for local
+        var jwtSecret = configuration["Jwt:Secret"];
+        if (string.IsNullOrEmpty(jwtSecret) || jwtSecret.Length < 32)
+        {
+            throw new InvalidOperationException("JWT Secret is not configured correctly. It must be at least 32 characters long and provided via configuration.");
+        }
         var key = Encoding.ASCII.GetBytes(jwtSecret);
 
         services.AddAuthentication(x =>

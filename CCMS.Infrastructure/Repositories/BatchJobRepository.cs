@@ -19,5 +19,12 @@ namespace CCMS.Infrastructure.Repositories
             await _context.BatchJobLogs.AddAsync(log);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<System.Collections.Generic.IEnumerable<BatchJobLog>> GetBatchLogsAsync()
+        {
+            return await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync(
+                System.Linq.Queryable.OrderByDescending(_context.BatchJobLogs, x => x.StartedAt)
+            );
+        }
     }
 }

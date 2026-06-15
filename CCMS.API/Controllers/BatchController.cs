@@ -6,7 +6,7 @@ namespace CCMS.API.Controllers;
 
 [ApiController]
 [Route("api/batch")]
-[Authorize(Roles = "CourtOfficer")]
+[Authorize(Roles = "BankOfficer")]
 public class BatchController : ControllerBase
 {
     private readonly ISender _sender;
@@ -26,7 +26,7 @@ public class BatchController : ControllerBase
     [HttpGet("logs")]
     public async Task<IActionResult> GetLogs()
     {
-        // Temporarily return empty until GetBatchLogsQuery is implemented
-        return Ok(new object[] { });
+        var result = await _sender.Send(new CCMS.Application.Features.Bank.Batch.Queries.GetBatchLogsQuery());
+        return Ok(result);
     }
 }

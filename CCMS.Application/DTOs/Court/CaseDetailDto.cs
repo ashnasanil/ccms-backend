@@ -17,7 +17,7 @@ namespace CCMS.Application.DTOs.Court
         public string Status { get; set; }
         public DateTime CreatedDate { get; set; }
         
-        public List<string> Documents { get; set; }
+        public List<AttachmentDto> Attachments { get; set; }
         public object BankResponse { get; set; }
     }
 }

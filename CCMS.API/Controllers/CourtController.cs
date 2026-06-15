@@ -31,9 +31,9 @@ namespace CCMS.API.Controllers
         }
 
         [HttpGet("cases/{id}")]
-        public async Task<IActionResult> GetCaseByIdAsync(System.Guid id)
+        public async Task<IActionResult> GetCaseByIdAsync(string id)
         {
-            var result = await _courtService.GetCaseByIdAsync(id);
+            var result = await _courtService.GetCaseByNumberAsync(id);
             if (result == null)
                 return NotFound();
 

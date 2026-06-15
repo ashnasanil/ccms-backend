@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CCMS.Application.DTOs.Court;
-using CCMS.Application.Helpers;
 using CCMS.Application.Interfaces;
 using CCMS.Application.Interfaces.Repositories;
 using CCMS.Application.Interfaces.Services;
@@ -43,8 +42,8 @@ namespace CCMS.Application.Services
 
         public async Task<IEnumerable<CaseListDto>> GetCasesAsync()
         {
-            var pendingCases = await _caseRepository.GetPendingCasesAsync();
-            return pendingCases.Select(c => new CaseListDto
+            var allCases = await _caseRepository.GetAllAsync();
+            return allCases.Select(c => new CaseListDto
             {
                 CaseNumber = c.CaseNumber,
                 DefendantName = c.DefendantName,
@@ -54,9 +53,9 @@ namespace CCMS.Application.Services
             });
         }
 
-        public async Task<CaseDetailDto> GetCaseByIdAsync(Guid id)
+        public async Task<CaseDetailDto> GetCaseByNumberAsync(string caseNumber)
         {
-            var caseEntity = await _caseRepository.GetByIdAsync(id);
+            var caseEntity = await _caseRepository.GetByCaseNumberAsync(caseNumber);
             if (caseEntity == null)
             {
                 return null;
@@ -77,7 +76,26 @@ namespace CCMS.Application.Services
                 BankName = caseEntity.BankName,
                 OrderType = caseEntity.OrderType.ToString(),
                 FreezeAmount = caseEntity.FreezeAmount,
-                Status = caseEntity.Status.ToString()
+                Status = caseEntity.Status.ToString(),
+                CreatedDate = caseEntity.CreatedAt,
+                Attachments = caseEntity.Attachments?.Select(a => new AttachmentDto
+                {
+                    FileName = a.FileName,
+                    FilePath = $"/api/attachments/{System.IO.Path.GetFileName(a.StoragePath)}",
+                    UploadedDate = a.CreatedAt
+                }).ToList(),
+                BankResponse = (caseEntity.Status == CaseStatus.FreezeApplied || 
+                                caseEntity.Status == CaseStatus.BalanceProvided || 
+                                caseEntity.Status == CaseStatus.AccountNotFound) ? new
+                {
+                    accountNumber = string.IsNullOrEmpty(caseEntity.MatchedAccountNumber) ? null : _maskingService.MaskAccountNumber(caseEntity.MatchedAccountNumber),
+                    balance = caseEntity.CaseResponse?.BalanceAmount,
+                    accountStatus = caseEntity.MatchedAccountStatus,
+                    remarks = caseEntity.CaseResponse?.Remarks ?? (caseEntity.Status == CaseStatus.AccountNotFound ? "No matching account found in bank records." : null),
+                    respondedAt = caseEntity.CaseResponse?.RespondedAt ?? caseEntity.UpdatedAt,
+                    responseType = caseEntity.CaseResponse != null ? (int)caseEntity.CaseResponse.ResponseType : -1,
+                    freezeAmount = caseEntity.CaseResponse?.FreezeAmount
+                } : null
             };
         }
 
@@ -137,10 +155,15 @@ namespace CCMS.Application.Services
             var caseId = Guid.NewGuid();
             var attachments = await ProcessAttachments(caseId, dto.CourtOrderFile, dto.AadhaarCopyFile, dto.PanCopyFile);
 
+            var today = DateTime.UtcNow;
+            var dailyCount = await _caseRepository.GetDailyCaseCountAsync(today);
+            var sequenceNumber = (dailyCount + 1).ToString("D4");
+            var caseNumber = $"CCMS-{today:yyyyMMdd}-{sequenceNumber}";
+
             var newCase = new Case
             {
                 Id = caseId,
-                CaseNumber = CaseNumberGenerator.Generate(),
+                CaseNumber = caseNumber,
                 ComplainantName = dto.ComplainantName,
                 DefendantName = dto.DefendantName,
                 AadhaarNumber = dto.AadhaarNumber,

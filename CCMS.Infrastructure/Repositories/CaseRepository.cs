@@ -27,6 +27,14 @@ namespace CCMS.Infrastructure.Repositories
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
+        public async Task<Case?> GetByCaseNumberAsync(string caseNumber)
+        {
+            return await _context.Cases
+                .Include(c => c.Attachments)
+                .Include(c => c.CaseResponse)
+                .FirstOrDefaultAsync(c => c.CaseNumber == caseNumber);
+        }
+
         public async Task<IEnumerable<Case>> GetCasesForBankAsync(string bankName, CaseStatus? status)
         {
             var query = _context.Cases.AsQueryable();
@@ -59,6 +67,14 @@ namespace CCMS.Infrastructure.Repositories
             return await _context.Cases
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
+        }
+
+        public async Task<int> GetDailyCaseCountAsync(DateTime date)
+        {
+            var prefix = $"CCMS-{date:yyyyMMdd}-";
+            return await _context.Cases
+                .Where(c => c.CaseNumber.StartsWith(prefix))
+                .CountAsync();
         }
 
         public async Task AddAsync(Case @case)
