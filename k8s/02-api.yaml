@@ -94,3 +94,10 @@ spec:
             name: ccms-backend-service
             port:
               number: 80
+      - path: /auth
+        pathType: Prefix
+        backend:
+          service:
+            name: ccms-backend-service
+            port:
+              number: 80
