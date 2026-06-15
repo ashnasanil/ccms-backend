@@ -11,6 +11,7 @@ metadata:
 data:
   Jwt__Issuer: "CCMS_Issuer"
   Jwt__Audience: "CCMS_Audience"
+  ASPNETCORE_HTTP_PORTS: "80"
 ---
 apiVersion: v1
 kind: Secret
