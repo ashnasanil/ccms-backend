@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ccms-mysql-pvc
+  namespace: ccms-prod
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccms-mysql
+  namespace: ccms-prod
+spec:
+  selector:
+    matchLabels:
+      app: ccms-mysql
+  template:
+    metadata:
+      labels:
+        app: ccms-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "root"
+        - name: MYSQL_DATABASE
+          value: "ccms_batch_db"
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-data
+        persistentVolumeClaim:
+          claimName: ccms-mysql-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ccms-mysql-service
+  namespace: ccms-prod
+spec:
+  type: ClusterIP
+  selector:
+    app: ccms-mysql
+  ports:
+  - port: 3306
+    targetPort: 3306
