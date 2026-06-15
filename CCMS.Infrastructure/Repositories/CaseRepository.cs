@@ -72,20 +72,27 @@ namespace CCMS.Infrastructure.Repositories
         public async Task<int> GetDailyCaseCountAsync(DateTime date)
         {
             var prefix = $"CCMS-{date:yyyyMMdd}-";
-            var lastCase = await _context.Cases
+            var caseNumbers = await _context.Cases
                 .Where(c => c.CaseNumber.StartsWith(prefix))
-                .OrderByDescending(c => c.CaseNumber)
-                .FirstOrDefaultAsync();
+                .Select(c => c.CaseNumber)
+                .ToListAsync();
 
-            if (lastCase == null) return 0;
+            if (!caseNumbers.Any()) return 0;
 
-            var lastSequenceStr = lastCase.CaseNumber.Substring(prefix.Length);
-            if (int.TryParse(lastSequenceStr, out int lastSequence))
+            int maxSequence = 0;
+            foreach (var num in caseNumbers)
             {
-                return lastSequence;
+                if (num.Length > prefix.Length)
+                {
+                    var seqStr = num.Substring(prefix.Length);
+                    if (int.TryParse(seqStr, out int seq) && seq > maxSequence)
+                    {
+                        maxSequence = seq;
+                    }
+                }
             }
             
-            return 0;
+            return maxSequence;
         }
 
         public async Task AddAsync(Case @case)
