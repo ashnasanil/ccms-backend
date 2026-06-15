@@ -38,8 +38,8 @@ pipeline {
                 powershell '(Get-Content k8s/02-api.yaml) -replace "<ACR_NAME>", $env:ACR -replace "#{ConnectionStrings__DefaultConnection}#", $env:DB_CONNECTION -replace "#{Jwt__Key}#", $env:JWT_KEY | Set-Content $env:TEMP\\02-api.yaml'
                 bat 'kubectl apply -f k8s/01-mysql.yaml'
                 bat 'kubectl apply -f %TEMP%\\02-api.yaml'
-                bat 'kubectl set image deployment/ccms-backend ccms-backend=%ACR%.azurecr.io/%IMAGE%:%BUILD_NUMBER%'
-                bat 'kubectl rollout status deployment/ccms-backend --timeout=120s'
+                bat 'kubectl set image deployment/ccms-backend ccms-backend=%ACR%.azurecr.io/%IMAGE%:%BUILD_NUMBER% -n ccms-prod'
+                bat 'kubectl rollout status deployment/ccms-backend -n ccms-prod --timeout=120s'
             }
         }
     }
