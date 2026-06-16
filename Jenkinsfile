@@ -10,7 +10,7 @@ pipeline {
         AZ_TENANT_ID     = credentials('azure-tenant-id')
         DB_CONNECTION    = credentials('db-connection-string')
         JWT_KEY          = credentials('jwt-secret-key')
-        AZURE_BLOB_CONNECTION = credentials('azure-blob-connection')
+        AZURE_BLOB_CONNECTION = credentials('AzureBlob__ConnectionString')
     }
     stages {
         stage('Checkout') {
