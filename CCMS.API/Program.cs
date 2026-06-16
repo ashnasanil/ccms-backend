@@ -13,7 +13,7 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
 // Add services to the container.
-builder.Services.AddApiServices(builder.Configuration);
+builder.Services.AddApiServices(builder.Configuration, builder.Environment);
 
 // Batch Module DI
 builder.Services.AddScoped<IBatchService, BatchService>();
@@ -26,19 +26,6 @@ app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CCMS API v1
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
-
-var attachmentsPath = Path.Combine(Directory.GetCurrentDirectory(), "Storage", "Attachments");
-if (!Directory.Exists(attachmentsPath))
-{
-    Directory.CreateDirectory(attachmentsPath);
-}
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(attachmentsPath),
-    RequestPath = "/api/attachments"
-});
-
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();

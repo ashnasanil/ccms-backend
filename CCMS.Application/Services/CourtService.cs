@@ -16,10 +16,10 @@ namespace CCMS.Application.Services
     public class CourtService : ICourtService
     {
         private readonly ICaseRepository _caseRepository;
-        private readonly ILocalFileStorageService _fileStorageService;
+        private readonly IFileStorageService _fileStorageService;
         private readonly IMaskingService _maskingService;
 
-        public CourtService(ICaseRepository caseRepository, ILocalFileStorageService fileStorageService, IMaskingService maskingService)
+        public CourtService(ICaseRepository caseRepository, IFileStorageService fileStorageService, IMaskingService maskingService)
         {
             _caseRepository = caseRepository;
             _fileStorageService = fileStorageService;
