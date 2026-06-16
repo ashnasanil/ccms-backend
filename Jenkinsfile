@@ -10,6 +10,7 @@ pipeline {
         AZ_TENANT_ID     = credentials('azure-tenant-id')
         DB_CONNECTION    = credentials('db-connection-string')
         JWT_KEY          = credentials('jwt-secret-key')
+        AZURE_BLOB_CONNECTION = credentials('azure-blob-connection')
     }
     stages {
         stage('Checkout') {
@@ -35,7 +36,7 @@ pipeline {
         stage('Deploy to AKS') {
             steps {
                 bat 'az aks get-credentials -n %AKS% -g %RG% --overwrite-existing'
-                powershell '(Get-Content k8s/02-api.yaml) -replace "<ACR_NAME>", $env:ACR -replace "#{ConnectionStrings__DefaultConnection}#", $env:DB_CONNECTION -replace "#{Jwt__Key}#", $env:JWT_KEY | Set-Content $env:TEMP\\02-api.yaml'
+                powershell '(Get-Content k8s/02-api.yaml) -replace "<ACR_NAME>", $env:ACR -replace "#{ConnectionStrings__DefaultConnection}#", $env:DB_CONNECTION -replace "#{Jwt__Key}#", $env:JWT_KEY -replace "#{AzureBlob__ConnectionString}#", $env:AZURE_BLOB_CONNECTION | Set-Content $env:TEMP\\02-api.yaml'
                 bat 'kubectl apply -f k8s/01-mysql.yaml'
                 bat 'kubectl apply -f %TEMP%\\02-api.yaml'
                 bat 'kubectl set image deployment/ccms-backend ccms-backend=%ACR%.azurecr.io/%IMAGE%:%BUILD_NUMBER% -n ccms-prod'

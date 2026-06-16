@@ -9,7 +9,7 @@ namespace CCMS.API.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
     {
         services.AddControllers();
         services.AddEndpointsApiExplorer();
@@ -80,7 +80,7 @@ public static class ServiceCollectionExtensions
 
         // Add Layer Dependencies
         services.AddApplication();
-        services.AddInfrastructureServices(configuration);
+        services.AddInfrastructureServices(configuration, environment);
 
         return services;
     }

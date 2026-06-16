@@ -10,12 +10,14 @@ using CCMS.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace CCMS.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             
@@ -33,7 +35,16 @@ namespace CCMS.Infrastructure
             services.AddScoped<IMaskingService, MaskingService>();
             services.AddScoped<IJwtProvider, JwtTokenService>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
-            services.AddScoped<ILocalFileStorageService, LocalFileStorageService>();
+
+            if (environment.IsDevelopment())
+            {
+                services.AddScoped<IFileStorageService, LocalFileStorageService>();
+            }
+            else
+            {
+                services.AddScoped<IFileStorageService, AzureBlobStorageService>();
+            }
+
             services.AddScoped<IBankAccountVerificationService, BankAccountVerificationService>();
 
             return services;

@@ -22,6 +22,7 @@ type: Opaque
 stringData:
   ConnectionStrings__DefaultConnection: "#{ConnectionStrings__DefaultConnection}#"
   Jwt__Key: "#{Jwt__Key}#"
+  AzureBlobStorage__ConnectionString: "#{AzureBlob__ConnectionString}#"
 ---
 apiVersion: apps/v1
 kind: Deployment
