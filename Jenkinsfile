@@ -35,7 +35,7 @@ pipeline {
         }
         stage('Deploy to AKS') {
             steps {
-                bat 'az aks get-credentials -n %AKS% -g %RG% -f kubeconfig'
+                bat 'az aks get-credentials -n %AKS% -g %RG% --admin -f kubeconfig'
                 powershell '(Get-Content k8s/02-api.yaml) -replace "<ACR_NAME>", $env:ACR -replace "#{ConnectionStrings__DefaultConnection}#", $env:DB_CONNECTION -replace "#{Jwt__Key}#", $env:JWT_KEY -replace "#{AzureBlob__ConnectionString}#", $env:AZURE_BLOB_CONNECTION | Set-Content $env:TEMP\\02-api.yaml'
                 bat 'kubectl --kubeconfig kubeconfig --insecure-skip-tls-verify=true apply -f k8s/01-mysql.yaml'
                 bat 'kubectl --kubeconfig kubeconfig --insecure-skip-tls-verify=true apply -f %TEMP%\\02-api.yaml'
